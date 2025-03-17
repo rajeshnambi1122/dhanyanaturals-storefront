@@ -1,6 +1,7 @@
-import { Suspense } from "react"
+"use client"
+
+import { Suspense, useEffect, useState } from "react"
 import Image from "next/image"
-import { listRegions } from "@lib/data/regions"
 import { StoreRegion } from "@medusajs/types"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import CartButton from "@modules/layout/components/cart-button"
@@ -89,26 +90,69 @@ const CartIconFallback = () => {
   )
 }
 
-export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+export default function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [regions, setRegions] = useState<StoreRegion[]>([]);
+  
+  // Fetch regions from the client side
+  useEffect(() => {
+    fetch('/api/regions')
+      .then(response => response.json())
+      .then(data => {
+        setRegions(data);
+      })
+      .catch(error => {
+        console.error('Error fetching regions:', error);
+        setRegions([]);
+      });
+  }, []);
+
+  useEffect(() => {
+    // Function to handle scroll events
+    const handleScroll = () => {
+      // Change to scrolled state after scrolling past the hero section (100vh)
+      if (window.scrollY > window.innerHeight * 0.9) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    // Add scroll event listener
+    window.addEventListener('scroll', handleScroll);
+    
+    // Initial check
+    handleScroll();
+    
+    // Clean up the event listener
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
+  // Dynamically set text color and background based on scroll position
+  const navTextColor = scrolled ? 'text-black' : 'text-white';
+  const navHoverColor = scrolled ? 'hover:text-[#2c5530]' : 'hover:text-[#bde6c2]';
+  const navBackground = scrolled ? 'bg-white/95' : 'bg-white/10';
+  const navBorder = scrolled ? 'border-gray-200' : 'border-white/10';
 
   return (
-    <div className="sticky top-0 inset-x-0 z-50 group">
-      <header className="relative h-16 md:h-20 mx-auto border-b duration-200 bg-white border-ui-border-base">
-        <nav className="content-container txt-xsmall-plus text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular relative">
+    <div className="fixed top-0 inset-x-0 z-50 group">
+      <header className={`relative h-16 md:h-20 mx-auto backdrop-blur-sm ${navBackground} border-b ${navBorder} transition-all duration-300`}>
+        <nav className={`px-4 md:px-8 lg:px-12 xl:px-16 ${navTextColor} flex items-center justify-between w-full h-full text-small-regular relative transition-colors duration-300`}>
           {/* Left section - Menu */}
-          <div className="flex items-center h-full w-1/4 z-10">
-            <SideMenu regions={regions} />
+          <div className="flex items-center h-full w-[60px] sm:w-[80px] lg:w-[100px] z-10">
+            <SideMenu regions={regions} isScrolled={scrolled} />
           </div>
 
-          {/* Middle section - Logo (Centered absolutely) */}
+          {/* Middle section - Logo (Centered) */}
           <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center h-full justify-center z-0">
             <LocalizedClientLink
               href="/"
               className="flex items-center"
               data-testid="nav-store-link"
             >
-              <div className="relative w-[120px] md:w-[180px] h-[60px] md:h-[80px]">
+              <div className="relative w-[100px] sm:w-[120px] md:w-[150px] lg:w-[180px] h-[50px] sm:h-[60px] md:h-[70px] lg:h-[80px]">
                 <Image
                   src="/dhanyanaturalslogopng.png"
                   alt="Dhanya Naturals"
@@ -121,53 +165,42 @@ export default async function Nav() {
           </div>
 
           {/* Right section - Navigation and Cart */}
-          <div className="flex items-center gap-x-2 md:gap-x-6 h-full justify-end w-1/4 z-10">
+          <div className="flex items-center h-full justify-end z-10">
             {/* Navigation links with icons - showing on all screens with adjusted spacing */}
-            <div className="flex items-center gap-x-3 md:gap-x-8 h-full">
+            <div className="hidden sm:flex items-center gap-x-2 md:gap-x-4 lg:gap-x-6 h-full">
               <LocalizedClientLink
-                className="hover:text-[#2c5530] flex flex-col items-center"
+                className={`${navHoverColor} flex flex-col items-center px-1 transition-colors duration-300`}
                 href="/store"
                 title="Shop"
               >
-                <ShopIcon size="24" />
+                <ShopIcon size="20" />
                 <span className="text-xs mt-1">Shop</span>
               </LocalizedClientLink>
            
               <LocalizedClientLink
-                className="hover:text-[#2c5530] flex flex-col items-center"
+                className={`${navHoverColor} flex flex-col items-center px-1 transition-colors duration-300`}
                 href="/about"
                 title="About"
               >
-                <AboutIcon size="24" />
+                <AboutIcon size="20" />
                 <span className="text-xs mt-1">About</span>
               </LocalizedClientLink>
               
               <LocalizedClientLink
-                className="hover:text-[#2c5530] flex flex-col items-center"
+                className={`${navHoverColor} flex flex-col items-center px-1 transition-colors duration-300`}
                 href="/account"
                 data-testid="nav-account-link"
                 title="Account"
               >
-                <User size="24" />
+                <User size="20" />
                 <span className="text-xs mt-1">Account</span>
               </LocalizedClientLink>
             </div>
-            <Suspense
-              fallback={
-                <LocalizedClientLink
-                  className="hover:text-[#2c5530] flex flex-col items-center"
-                  href="/cart"
-                  data-testid="nav-cart-link"
-                >
-                  <div className="relative">
-                    <CartIconFallback />
-                  </div>
-                  <span className="text-xs mt-1">Cart (0)</span>
-                </LocalizedClientLink>
-              }
-            >
-              <CartButton />
-            </Suspense>
+            
+            {/* Only show cart on mobile */}
+            <div className="ml-auto sm:ml-4">
+              <CartButton isScrolled={scrolled} />
+            </div>
           </div>
         </nav>
       </header>

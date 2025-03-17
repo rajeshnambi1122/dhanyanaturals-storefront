@@ -20,16 +20,20 @@ export default async function ProductRail({
   try {
     console.log(`ProductRail: Fetching products for collection "${collection.title}"...`);
     
+    // Fetch all products and filter them later
     const result = await listProducts({
       regionId: region.id,
       queryParams: {
-        limit: 4,
-        collection_id: collection.id,
+        limit: 10, // Fetch more products to ensure we have enough after filtering
         fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags",
       },
     });
     
-    pricedProducts = result.response.products;
+    // Filter products to only include those in the collection
+    const allProducts = result.response.products;
+    pricedProducts = allProducts.filter(product => 
+      product.collection_id === collection.id
+    ).slice(0, 4); // Get at most 4 products
     
     console.log(`ProductRail: Fetched ${pricedProducts.length} products for collection "${collection.title}"`);
   } catch (error) {
@@ -40,14 +44,14 @@ export default async function ProductRail({
   // If no products and error occurred, show error
   if (pricedProducts.length === 0 && errorMessage) {
     return (
-      <div className="py-6">
-        <div className="flex items-center justify-between mb-8">
+      <div className="py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8">
           <div>
-            <Text className="text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
-            <div className="h-1 w-20 bg-[#2c5530] rounded mt-2"></div>
+            <Text className="text-xl sm:text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
+            <div className="h-1 w-16 sm:w-20 bg-[#2c5530] rounded mt-1 sm:mt-2"></div>
           </div>
         </div>
-        <div className="bg-red-50 p-4 rounded">
+        <div className="bg-red-50 p-3 sm:p-4 rounded text-sm sm:text-base">
           <p className="text-red-600">Error loading products: {errorMessage}</p>
         </div>
       </div>
@@ -57,17 +61,17 @@ export default async function ProductRail({
   // If no products but no error, show empty message
   if (pricedProducts.length === 0) {
     return (
-      <div className="py-6">
-        <div className="flex items-center justify-between mb-8">
+      <div className="py-4 sm:py-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8">
           <div>
-            <Text className="text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
-            <div className="h-1 w-20 bg-[#2c5530] rounded mt-2"></div>
+            <Text className="text-xl sm:text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
+            <div className="h-1 w-16 sm:w-20 bg-[#2c5530] rounded mt-1 sm:mt-2"></div>
           </div>
           <InteractiveLink href={`/collections/${collection.handle}`}>
-            <span className="text-[#2c5530] font-medium">View all</span>
+            <span className="text-[#2c5530] font-medium text-sm sm:text-base mt-2 sm:mt-0 inline-block">View all</span>
           </InteractiveLink>
         </div>
-        <div className="bg-gray-50 p-4 rounded text-center">
+        <div className="bg-gray-50 p-3 sm:p-4 rounded text-center text-sm sm:text-base">
           <p className="text-gray-600">No products available in this collection</p>
         </div>
       </div>
@@ -75,25 +79,27 @@ export default async function ProductRail({
   }
 
   return (
-    <div className="py-6">
-      <div className="flex items-center justify-between mb-8">
+    <div className="py-4 sm:py-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8">
         <div>
-          <Text className="text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
-          <div className="h-1 w-20 bg-[#2c5530] rounded mt-2"></div>
+          <Text className="text-xl sm:text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
+          <div className="h-1 w-16 sm:w-20 bg-[#2c5530] rounded mt-1 sm:mt-2"></div>
         </div>
         <InteractiveLink href={`/collections/${collection.handle}`}>
-          <span className="text-[#2c5530] font-medium">View all</span>
+          <span className="text-[#2c5530] font-medium text-sm sm:text-base mt-2 sm:mt-0 inline-block">View all</span>
         </InteractiveLink>
       </div>
-      <ul className="grid grid-cols-2 small:grid-cols-3 medium:grid-cols-4 gap-x-6 gap-y-8">
-        {pricedProducts.slice(0, 4).map((product) => (
-          <li key={product.id} className="group transform transition-transform duration-300 hover:-translate-y-1">
-            <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
-              <ProductPreview product={product} region={region} isFeatured />
-            </div>
-          </li>
-        ))}
-      </ul>
+      <div className="overflow-x-auto -mx-4 px-4 pb-4 sm:overflow-visible sm:mx-0 sm:px-0 sm:pb-0">
+        <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 w-[calc(100%+1rem)] sm:w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+          {pricedProducts.map((product) => (
+            <li key={product.id} className="group transform transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
+              <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+                <ProductPreview product={product} region={region} isFeatured />
+              </div>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   )
 }

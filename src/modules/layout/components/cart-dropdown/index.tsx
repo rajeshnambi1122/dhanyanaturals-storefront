@@ -55,8 +55,10 @@ const CartIcon = ({ size = "20", color = "currentColor", ...attributes }) => {
 
 const CartDropdown = ({
   cart: cartState,
+  isScrolled = false
 }: {
   cart?: HttpTypes.StoreCart | null
+  isScrolled?: boolean
 }) => {
   const [activeTimer, setActiveTimer] = useState<NodeJS.Timer | undefined>(
     undefined
@@ -109,6 +111,11 @@ const CartDropdown = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [totalItems, itemRef.current])
 
+  // Dynamically set text color and hover effect based on scroll position
+  const textColor = isScrolled ? 'text-black' : 'text-white';
+  const hoverColor = isScrolled ? 'hover:text-[#2c5530]' : 'hover:text-[#bde6c2]';
+  const badgeColor = 'bg-[#2c5530] text-white';
+
   return (
     <div
       className="h-full z-50"
@@ -118,15 +125,15 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full focus:outline-none">
           <LocalizedClientLink
-            className="hover:text-[#2c5530] flex flex-col items-center justify-center h-full"
+            className={`${hoverColor} flex flex-col items-center justify-center h-full px-1 ${textColor} transition-colors duration-300`}
             href="/cart"
             data-testid="nav-cart-link"
             title="Cart"
           >
             <div className="relative">
-              <CartIcon size="24" />
+              <CartIcon size="20" />
               {totalItems > 0 && (
-                <div className="absolute -top-2 -right-2 bg-[#2c5530] text-white w-5 h-5 flex items-center justify-center rounded-full text-xs">
+                <div className={`absolute -top-2 -right-2 ${badgeColor} w-4 h-4 flex items-center justify-center rounded-full text-[10px]`}>
                   {totalItems}
                 </div>
               )}
