@@ -27,12 +27,12 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
   return (
     <Container
       className={clx(
-        "relative w-full overflow-hidden p-3 md:p-4 bg-ui-bg-subtle shadow-elevation-card-rest rounded-lg md:rounded-large group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
+        "relative w-full overflow-hidden bg-ui-bg-subtle shadow-elevation-card-rest rounded-lg md:rounded-large group-hover:shadow-elevation-card-hover transition-shadow ease-in-out duration-150",
         className,
         {
-          "aspect-[1/1] sm:aspect-[11/14]": isFeatured,
-          "aspect-[1/1] sm:aspect-[9/16]": !isFeatured && size !== "square",
-          "aspect-[1/1]": size === "square",
+          "aspect-[4/5] p-0": isFeatured,
+          "aspect-[1/1] sm:aspect-[9/16] p-3 md:p-4": !isFeatured && size !== "square",
+          "aspect-[1/1] p-3 md:p-4": size === "square",
           "w-[140px] sm:w-[180px]": size === "small",
           "w-[200px] sm:w-[290px]": size === "medium",
           "w-[300px] sm:w-[440px]": size === "large",
@@ -41,7 +41,7 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
       )}
       data-testid={dataTestid}
     >
-      <ImageOrPlaceholder image={initialImage} size={size} />
+      <ImageOrPlaceholder image={initialImage} size={size} isFeatured={isFeatured} />
     </Container>
   )
 }
@@ -49,16 +49,24 @@ const Thumbnail: React.FC<ThumbnailProps> = ({
 const ImageOrPlaceholder = ({
   image,
   size,
-}: Pick<ThumbnailProps, "size"> & { image?: string }) => {
+  isFeatured,
+}: Pick<ThumbnailProps, "size" | "isFeatured"> & { image?: string }) => {
   return image ? (
     <Image
       src={image}
       alt="Thumbnail"
-      className="absolute inset-0 object-cover object-center"
+      className={clx(
+        "absolute inset-0 object-cover",
+        {
+          "object-center": !isFeatured,
+          "object-top": isFeatured,
+        }
+      )}
       draggable={false}
-      quality={50}
+      quality={isFeatured ? 80 : 50}
       sizes="(max-width: 480px) 100vw, (max-width: 768px) 50vw, (max-width: 992px) 33vw, 25vw"
       fill
+      priority={isFeatured}
     />
   ) : (
     <div className="w-full h-full absolute inset-0 flex items-center justify-center">

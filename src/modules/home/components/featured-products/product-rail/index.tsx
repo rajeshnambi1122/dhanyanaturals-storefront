@@ -25,7 +25,7 @@ export default async function ProductRail({
       regionId: region.id,
       queryParams: {
         limit: 10, // Fetch more products to ensure we have enough after filtering
-        fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags",
+        fields: "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags,+description",
       },
     });
     
@@ -80,20 +80,20 @@ export default async function ProductRail({
 
   return (
     <div className="py-4 sm:py-6">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8">
         <div>
           <Text className="text-xl sm:text-2xl font-medium text-[#2c5530]">{collection.title}</Text>
           <div className="h-1 w-16 sm:w-20 bg-[#2c5530] rounded mt-1 sm:mt-2"></div>
         </div>
         <InteractiveLink href={`/collections/${collection.handle}`}>
-          <span className="text-[#2c5530] font-medium text-sm sm:text-base mt-2 sm:mt-0 inline-block">View all</span>
+          <span className="text-[#2c5530] font-medium text-sm sm:text-base mt-2 sm:mt-0 inline-block hover:underline">View all</span>
         </InteractiveLink>
       </div>
       <div className="overflow-x-auto -mx-4 px-4 pb-4 sm:overflow-visible sm:mx-0 sm:px-0 sm:pb-0">
-        <ul className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 w-[calc(100%+1rem)] sm:w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        <ul className="grid grid-cols-2 gap-4 sm:gap-6 md:gap-8 w-[calc(100%+1rem)] sm:w-full sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
           {pricedProducts.map((product) => (
             <li key={product.id} className="group transform transition-transform duration-300 hover:-translate-y-1 min-w-[160px]">
-              <div className="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300">
+              <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
                 <ProductPreview product={product} region={region} isFeatured />
               </div>
             </li>

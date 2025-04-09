@@ -2,7 +2,6 @@ import { Metadata } from "next"
 import Image from "next/image"
 import Link from "next/link"
 
-import FeaturedProducts from "@modules/home/components/featured-products"
 import Hero from "@modules/home/components/hero"
 import { listCollections } from "@lib/data/collections"
 import { getRegion } from "@lib/data/regions"
@@ -167,19 +166,6 @@ export default async function Home(props: {
               <p className="text-gray-600 text-sm md:text-base">Sustainable packaging and environmentally conscious production methods.</p>
             </div>
           </div>
-        </div>
-      </div>
-      
-      {/* Featured Products */}
-      <div className="py-8 sm:py-12 md:py-16 px-4 sm:px-6 md:px-8 max-w-[1440px] mx-auto">
-        <div className="text-center mb-8 md:mb-12">
-          <h2 className="text-2xl md:text-3xl font-semibold text-[#2c5530] mb-2">Featured Products</h2>
-          <p className="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">Discover our most popular natural and herbal products</p>
-        </div>
-        <div className="w-full overflow-x-auto pb-4">
-          <ul className="flex flex-col gap-y-8 md:gap-y-12 min-w-full">
-            <FeaturedProducts collections={collections} region={region} />
-          </ul>
         </div>
       </div>
       

@@ -7,9 +7,15 @@ const Layout: React.FC<{
   children: React.ReactNode
 }> = ({ children }) => {
   return (
-    <div>
+    <div className="flex flex-col min-h-screen">
       <Nav />
-      <main className="relative">{children}</main>
+      <div className="flex-1 w-full mt-16 md:mt-20">
+        <main className="relative">
+          <div className="content-container">
+            {children}
+          </div>
+        </main>
+      </div>
       <Footer />
     </div>
   )

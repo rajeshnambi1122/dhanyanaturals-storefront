@@ -131,14 +131,14 @@ export default function Nav() {
   }, []);
 
   // Dynamically set text color and background based on scroll position
-  const navTextColor = scrolled ? 'text-black' : 'text-white';
+  const navTextColor = scrolled ? 'text-gray-900' : 'text-white';
   const navHoverColor = scrolled ? 'hover:text-[#2c5530]' : 'hover:text-[#bde6c2]';
-  const navBackground = scrolled ? 'bg-white/95' : 'bg-white/10';
-  const navBorder = scrolled ? 'border-gray-200' : 'border-white/10';
+  const navBackground = scrolled ? 'bg-white shadow-sm' : 'bg-black/80 backdrop-blur-md';
+  const navBorder = scrolled ? 'border-gray-100' : 'border-white/10';
 
   return (
-    <div className="fixed top-0 inset-x-0 z-50 group">
-      <header className={`relative h-16 md:h-20 mx-auto backdrop-blur-sm ${navBackground} border-b ${navBorder} transition-all duration-300`}>
+    <div className="fixed top-0 left-0 right-0 z-50">
+      <header className={`relative h-16 md:h-20 w-full ${navBackground} border-b ${navBorder} transition-all duration-300`}>
         <nav className={`px-4 md:px-8 lg:px-12 xl:px-16 ${navTextColor} flex items-center justify-between w-full h-full text-small-regular relative transition-colors duration-300`}>
           {/* Left section - Menu */}
           <div className="flex items-center h-full w-[60px] sm:w-[80px] lg:w-[100px] z-10">
@@ -165,7 +165,7 @@ export default function Nav() {
           </div>
 
           {/* Right section - Navigation and Cart */}
-          <div className="flex items-center h-full justify-end z-10">
+          <div className="flex items-center gap-x-4 md:gap-x-6">
             {/* Navigation links with icons - showing on all screens with adjusted spacing */}
             <div className="hidden sm:flex items-center gap-x-2 md:gap-x-4 lg:gap-x-6 h-full">
               <LocalizedClientLink
@@ -197,7 +197,7 @@ export default function Nav() {
               </LocalizedClientLink>
             </div>
             
-            {/* Only show cart on mobile */}
+            {/* Cart button */}
             <div className="ml-auto sm:ml-4">
               <CartButton isScrolled={scrolled} />
             </div>

@@ -37,11 +37,16 @@ export default async function ProductPreview({
           size="full"
           isFeatured={isFeatured}
         />
-        <div className="flex flex-col sm:flex-row px-2 py-2 txt-compact-medium mt-2 justify-between">
-          <Text className="text-ui-fg-subtle text-sm sm:text-base mb-1 sm:mb-0 truncate" data-testid="product-title">
+        <div className={`flex flex-col ${isFeatured ? 'px-3 py-3' : 'px-2 py-2'} mt-2 justify-between`}>
+          <Text className={`${isFeatured ? 'text-base sm:text-lg font-medium' : 'text-sm sm:text-base'} text-ui-fg-subtle mb-1 sm:mb-0 truncate`} data-testid="product-title">
             {product.title}
           </Text>
-          <div className="flex items-center gap-x-2">
+          {isFeatured && product.description && (
+            <Text className="text-xs sm:text-sm text-gray-500 line-clamp-2 mt-1 mb-2 hidden sm:block">
+              {product.description.substring(0, 80)}{product.description.length > 80 ? '...' : ''}
+            </Text>
+          )}
+          <div className={`flex items-center ${isFeatured ? 'mt-2' : ''}`}>
             {cheapestPrice && <PreviewPrice price={cheapestPrice} />}
           </div>
         </div>
